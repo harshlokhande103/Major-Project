@@ -1,10 +1,21 @@
 /* Global container */
+:root {
+  --primary: #2563eb; /* blue */
+  --primary-600: #1d4ed8;
+  --ink: #0f172a; /* dark text */
+  --bg: #ffffff; /* white */
+  --surface: #ffffff;
+  --lavender: #ede9fe; /* light purple */
+  --chip: #eef2ff; /* light indigo */
+  --shadow: 0 6px 22px rgba(2, 6, 23, 0.08);
+}
+
 .app-container {
   font-family: 'Inter', system-ui, Avenir, Helvetica, Arial, sans-serif;
   width: 100%;
   min-height: 100vh;
-  color: #1a1a1a;
-  background: #f6d7c9;
+  color: var(--ink);
+  background: linear-gradient(180deg, var(--lavender), var(--bg) 40%);
 }
 
 /* Ensure padding/border are included in element widths */
@@ -16,8 +27,8 @@
   justify-content: space-between;
   align-items: center;
   padding: 1rem 2rem;
-  background-color: #fff;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  background-color: var(--surface);
+  box-shadow: 0 2px 8px rgba(2,6,23,0.06);
   position: sticky;
   top: 0;
   z-index: 1000;
@@ -30,15 +41,10 @@
   align-items: center;
   gap: 0.75rem;
 }
-.navbar .nav-links a {
-  color: #111;
-}
+.navbar .nav-links a { color: var(--ink); }
 .navbar .nav-links .sign-in,
 .navbar .nav-links .register,
-.navbar .nav-links .start-mentoring {
-  background: #111;
-  color: #fff;
-}
+.navbar .nav-links .start-mentoring { background: var(--primary); color: #fff; }
 
 /* Hero */
 .hero {
@@ -60,7 +66,7 @@
   margin-bottom: 1rem;
 }
 .hero-left h1 .muted { font-weight: 400; }
-.hero-left h1 .emph { font-weight: 800; }
+.hero-left h1 .emph { font-weight: 800; color: var(--primary); }
 
 .hero-left p {
   font-size: clamp(1rem, 2.2vw, 1.25rem);
@@ -74,16 +80,17 @@
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  background: #111;
+  background: var(--primary);
   color: #fff;
   border: none;
   border-radius: 14px;
   padding: 1rem 1.25rem;
 }
+.cta-primary:hover { background: var(--primary-600); }
 .badge {
-  background: #fff;
-  color: #111;
-  border: 1px solid rgba(0,0,0,0.08);
+  background: var(--chip);
+  color: var(--ink);
+  border: 1px solid rgba(2,6,23,0.06);
   border-radius: 12px;
   padding: 0.6rem 0.9rem;
   font-weight: 600;
@@ -94,18 +101,52 @@
 .mentor-grid { display: grid; grid-template-columns: 1fr; gap: 1rem; }
 @media (min-width: 520px) { .mentor-grid { grid-template-columns: 1fr 1fr; } }
 
+.hero-right { display: flex; justify-content: center; gap: 1rem; }
+.mentor-scroller { height: 520px; overflow: hidden; width: 300px; }
+@media (max-width: 520px) { .mentor-scroller { height: 440px; } }
+.mentor-track { display: flex; flex-direction: column; gap: 1rem; animation: scrollY 18s linear infinite; }
+.mentor-track.reverse { animation-name: scrollYReverse; }
+
 .mentor-card {
-  background: #fff;
+  background: var(--surface);
   border-radius: 16px;
-  box-shadow: 0 6px 22px rgba(0,0,0,0.08);
+  box-shadow: var(--shadow);
   overflow: hidden;
   text-align: left;
+  transform: translateY(0) scale(1);
+  transition: transform 240ms ease, box-shadow 240ms ease;
+  animation: cardIn 600ms ease both;
 }
+.mentor-card:hover {
+  transform: translateY(-6px) scale(1.01);
+  box-shadow: 0 14px 30px rgba(2, 6, 23, 0.12);
+}
+.mentor-card:nth-child(1) { animation-delay: 60ms; }
+.mentor-card:nth-child(2) { animation-delay: 120ms; }
+.mentor-card:nth-child(3) { animation-delay: 180ms; }
+.mentor-card:nth-child(4) { animation-delay: 240ms; }
+.mentor-card:nth-child(5) { animation-delay: 300ms; }
+.mentor-card:nth-child(6) { animation-delay: 360ms; }
 .mentor-card img { width: 100%; height: 160px; object-fit: cover; display: block; }
 .mentor-card .card-body { padding: 0.9rem 1rem 1.1rem 1rem; }
 .mentor-card h3 { margin: 0.2rem 0 0.25rem 0; font-size: 1.05rem; }
 .mentor-card p { margin: 0; color: #444; font-size: 0.95rem; }
-.mentor-card .company-chip { display: inline-block; margin-top: 0.6rem; background: #f3f4f6; color: #111; border-radius: 999px; padding: 0.25rem 0.6rem; font-size: 0.8rem; }
+.mentor-card .company-chip { display: inline-block; margin-top: 0.6rem; background: var(--lavender); color: var(--ink); border-radius: 999px; padding: 0.25rem 0.6rem; font-size: 0.8rem; }
+
+@keyframes cardIn {
+  from { opacity: 0; transform: translateY(12px) scale(0.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes scrollY {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(-50%); }
+}
+
+@keyframes scrollYReverse {
+  0% { transform: translateY(-50%); }
+  100% { transform: translateY(0); }
+}
 
 /* Login */
 .login-wrap { display: grid; place-items: center; min-height: calc(100vh - 72px); padding: 2rem 1rem; }
