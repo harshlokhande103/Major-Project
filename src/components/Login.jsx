@@ -1,13 +1,14 @@
 import React, { useState } from 'react';
 
-const Login = ({ onClose }) => {
+const Login = ({ onClose, onLogin }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Placeholder: handle auth later
-    onClose?.();
+    // In a real app, we would validate credentials here
+    // For now, just call the onLogin function to navigate to dashboard
+    onLogin?.();
   };
 
   return (

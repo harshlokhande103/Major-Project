@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-const Register = ({ onClose }) => {
+const Register = ({ onClose, onRegister }) => {
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
@@ -8,8 +8,13 @@ const Register = ({ onClose }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Placeholder: submit registration later
-    onClose?.();
+    // In a real app, we would validate and submit registration data
+    // For now, just call onRegister to simulate successful registration
+    if (onRegister) {
+      onRegister();
+    } else {
+      onClose?.();  // Fallback to onClose if onRegister is not provided
+    }
   };
 
   return (

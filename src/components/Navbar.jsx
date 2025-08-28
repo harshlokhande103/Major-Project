@@ -1,6 +1,6 @@
 import React from 'react';
 
-const Navbar = ({ onSignIn, onRegister }) => {
+const Navbar = ({ onSignIn, onRegister, onDashboard, isLoggedIn }) => {
   return (
     <nav className="navbar">
       <div className="logo">Clarity Call</div>
@@ -8,9 +8,15 @@ const Navbar = ({ onSignIn, onRegister }) => {
         <a href="#features">Features</a>
         <a href="#mentors">Mentors</a>
         <a href="#pricing">Pricing</a>
-        <button className="sign-in" onClick={onSignIn}>Sign In</button>
-        <button className="register" onClick={onRegister}>Register</button>
-        <button className="start-mentoring">Start Mentoring</button>
+        {!isLoggedIn ? (
+          <>
+            <button className="sign-in" onClick={onSignIn}>Sign In</button>
+            <button className="register" onClick={onRegister}>Register</button>
+            <button className="start-mentoring">Start Mentoring</button>
+          </>
+        ) : (
+          <button className="dashboard-btn" onClick={onDashboard}>Dashboard</button>
+        )}
       </div>
     </nav>
   );
