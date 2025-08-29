@@ -8,13 +8,7 @@ const Register = ({ onClose, onRegister }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // In a real app, we would validate and submit registration data
-    // For now, just call onRegister to simulate successful registration
-    if (onRegister) {
-      onRegister();
-    } else {
-      onClose?.();  // Fallback to onClose if onRegister is not provided
-    }
+
   };
 
   return (

@@ -3,7 +3,10 @@ import React from 'react';
 const Navbar = ({ onSignIn, onRegister, onDashboard, isLoggedIn }) => {
   return (
     <nav className="navbar">
-      <div className="logo">Clarity Call</div>
+      <div className="logo">
+        <img src="/logo-removebg-preview.png" alt="Clarity Call Logo" className="logo-img" />
+        <span className="logo-text">CLARITY CALL</span>
+      </div>
       <div className="nav-links">
         <a href="#features">Features</a>
         <a href="#mentors">Mentors</a>

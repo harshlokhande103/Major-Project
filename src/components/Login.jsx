@@ -6,9 +6,7 @@ const Login = ({ onClose, onLogin }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // In a real app, we would validate credentials here
-    // For now, just call the onLogin function to navigate to dashboard
-    onLogin?.();
+
   };
 
   return (
