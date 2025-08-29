@@ -1,29 +1,12 @@
 import React, { useState } from 'react';
 
-const Login = ({ onClose }) => {
+const Login = ({ onClose, onLogin }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    (async () => {
-      try {
-        const res = await fetch('/api/login', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email, password }),
-        });
-        const data = await res.json().catch(() => ({}));
-        if (!res.ok) {
-          alert(data.message || 'Login failed');
-          return;
-        }
-        alert('Login successful');
-        onClose?.();
-      } catch (err) {
-        alert('Network error');
-      }
-    })();
+
   };
 
   return (

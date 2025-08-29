@@ -4,6 +4,7 @@ import MentorCard from './components/MentorCard'
 import Login from './components/Login'
 import Register from './components/Register'
 import SelectRole from './components/SelectRole'
+import Dashboard from './components/Dashboard'
 import './App.css'
 
 function App() {
@@ -38,18 +39,45 @@ function App() {
   const openLogin = () => setView('login');
   const openRegister = () => setView('register');
   const openSelect = () => setView('select');
+  const openDashboard = () => {
+    console.log('Opening dashboard');
+    setView('dashboard');
+  };
   const backHome = () => setView('home');
   const handleRoleSelect = (role) => {
     // For now both roles redirect to login
     if (role === 'client' || role === 'mentor') setView('login');
   };
+  
+  // This section is now handled by the updated handleLogin function above
 
+  // Track if user is logged in
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  
+  // Update login handler to set logged in state
+  const handleLogin = () => {
+    setIsLoggedIn(true);
+    setView('dashboard');
+  };
+  
+  // Update register handler to set logged in state
+  const handleRegister = () => {
+    setIsLoggedIn(true);
+    setView('dashboard');
+  };
+  
   return (
     <div className="app-container">
-      <Navbar onSignIn={openLogin} onRegister={openRegister} />
-      {view === 'login' && <Login onClose={backHome} />}
-      {view === 'register' && <Register onClose={backHome} />}
+      <Navbar 
+        onSignIn={openLogin} 
+        onRegister={openRegister} 
+        onDashboard={openDashboard}
+        isLoggedIn={isLoggedIn} 
+      />
+      {view === 'login' && <Login onClose={backHome} onLogin={handleLogin} />}
+      {view === 'register' && <Register onClose={backHome} onRegister={handleRegister} />}
       {view === 'select' && <SelectRole onSelect={handleRoleSelect} onBack={backHome} />}
+      {view === 'dashboard' && <Dashboard onClose={backHome} />}
       {view === 'home' && (
       <main className="hero">
         <section className="hero-left">

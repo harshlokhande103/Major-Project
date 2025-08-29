@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-const Register = ({ onClose }) => {
+const Register = ({ onClose, onRegister }) => {
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
@@ -8,25 +8,7 @@ const Register = ({ onClose }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Submit to backend API
-    (async () => {
-      try {
-        const res = await fetch('/api/register', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ firstName, lastName, email, password }),
-        });
-        if (!res.ok) {
-          const data = await res.json().catch(() => ({}));
-          alert(data.message || 'Registration failed');
-          return;
-        }
-        alert('Registration successful');
-        onClose?.();
-      } catch (err) {
-        alert('Network error');
-      }
-    })();
+
   };
 
   return (
