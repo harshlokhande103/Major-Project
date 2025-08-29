@@ -8,7 +8,29 @@ const Register = ({ onClose, onRegister }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-
+    (async () => {
+      try {
+        const res = await fetch('/api/register', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ firstName, lastName, email, password }),
+        });
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok) {
+          if (res.status === 409) {
+            alert(data.message || 'Email already registered');
+          } else {
+            alert(data.message || 'Registration failed');
+          }
+          return;
+        }
+        alert('Registration successful');
+        if (typeof onRegister === 'function') onRegister(data);
+        else onClose?.();
+      } catch (err) {
+        alert('Network error');
+      }
+    })();
   };
 
   return (

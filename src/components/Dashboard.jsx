@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
-const Dashboard = ({ onClose }) => {
+const Dashboard = ({ onClose, user }) => {
   const [activeTab, setActiveTab] = useState('home');
   const [showNotifications, setShowNotifications] = useState(false);
   const [animateStats, setAnimateStats] = useState(false);
@@ -26,6 +26,9 @@ const Dashboard = ({ onClose }) => {
      }
    ]);
   
+  const displayName = user?.firstName ? `${user.firstName}${user.lastName ? ' ' + user.lastName : ''}` : (user?.email || 'User');
+  const initials = (user?.firstName || user?.email || 'U').slice(0,1).toUpperCase() + (user?.lastName ? user.lastName.slice(0,1).toUpperCase() : '');
+ 
   // Mock data
   const stats = {
     totalSessions: 24,
@@ -152,7 +155,8 @@ const Dashboard = ({ onClose }) => {
           <>
             <div className="welcome-banner">
               <div className="welcome-text">
-                <h2>Welcome back, John!</h2>
+                <h2>Welcome back, {displayName}!</h2>
+                <p>Signed in as {user?.email || '—'}</p>
                 <p>Here's what's happening with your mentoring business today.</p>
               </div>
               <div className="quick-actions">
@@ -478,10 +482,10 @@ const Dashboard = ({ onClose }) => {
             <h2>My Profile</h2>
             <div className="profile-preview">
               <div className="profile-header">
-                <div className="profile-avatar">JD</div>
+                <div className="profile-avatar">{initials || 'U'}</div>
                 <div className="profile-title">
-                  <h3>John Doe</h3>
-                  <p>Career Coach & Mentor</p>
+                  <h3>{displayName}</h3>
+                  <p>{user?.email || '—'}</p>
                 </div>
               </div>
               <div className="profile-bio">
@@ -580,8 +584,8 @@ const Dashboard = ({ onClose }) => {
               )}
             </div>
             <div className="user-profile">
-              <span className="user-name">John Doe</span>
-              <div className="user-avatar">JD</div>
+              <span className="user-name">{displayName}</span>
+              <div className="user-avatar">{initials || 'U'}</div>
             </div>
           </div>
         </div>

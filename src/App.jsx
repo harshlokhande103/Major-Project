@@ -3,12 +3,12 @@ import Navbar from './components/Navbar'
 import MentorCard from './components/MentorCard'
 import Login from './components/Login'
 import Register from './components/Register'
-import SelectRole from './components/SelectRole'
 import Dashboard from './components/Dashboard'
 import './App.css'
 
 function App() {
   const [view, setView] = useState('home');
+  const [user, setUser] = useState(null);
   const mentors = [
     {
       name: "Rahul Kumar",
@@ -38,31 +38,26 @@ function App() {
 
   const openLogin = () => setView('login');
   const openRegister = () => setView('register');
-  const openSelect = () => setView('select');
   const openDashboard = () => {
     console.log('Opening dashboard');
     setView('dashboard');
   };
   const backHome = () => setView('home');
-  const handleRoleSelect = (role) => {
-    // For now both roles redirect to login
-    if (role === 'client' || role === 'mentor') setView('login');
-  };
   
-  // This section is now handled by the updated handleLogin function above
-
   // Track if user is logged in
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   
   // Update login handler to set logged in state
-  const handleLogin = () => {
+  const handleLogin = (loggedInUser) => {
     setIsLoggedIn(true);
+    setUser(loggedInUser || null);
     setView('dashboard');
   };
   
   // Update register handler to set logged in state
-  const handleRegister = () => {
+  const handleRegister = (registeredUser) => {
     setIsLoggedIn(true);
+    setUser(registeredUser || null);
     setView('dashboard');
   };
   
@@ -76,8 +71,7 @@ function App() {
       />
       {view === 'login' && <Login onClose={backHome} onLogin={handleLogin} />}
       {view === 'register' && <Register onClose={backHome} onRegister={handleRegister} />}
-      {view === 'select' && <SelectRole onSelect={handleRoleSelect} onBack={backHome} />}
-      {view === 'dashboard' && <Dashboard onClose={backHome} />}
+      {view === 'dashboard' && <Dashboard onClose={backHome} user={user} />}
       {view === 'home' && (
       <main className="hero">
         <section className="hero-left">
@@ -89,7 +83,7 @@ function App() {
             & Professional Mentorship for your career and business.
           </p>
           <div className="cta-row">
-            <button className="cta-primary" onClick={openSelect}>Get Started →</button>
+            <button className="cta-primary" onClick={openLogin}>Get Started →</button>
             <div className="badge">100k+ <span className="stars">★★★★★</span> reviews</div>
             
           </div>
