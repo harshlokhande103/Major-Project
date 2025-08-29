@@ -6,8 +6,24 @@ const Login = ({ onClose }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Placeholder: handle auth later
-    onClose?.();
+    (async () => {
+      try {
+        const res = await fetch('/api/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password }),
+        });
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok) {
+          alert(data.message || 'Login failed');
+          return;
+        }
+        alert('Login successful');
+        onClose?.();
+      } catch (err) {
+        alert('Network error');
+      }
+    })();
   };
 
   return (
