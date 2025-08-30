@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 
-const Dashboard = ({ onClose, user }) => {
+const Dashboard = ({ onClose, user, onSwitchDashboard }) => {
   const [activeTab, setActiveTab] = useState('home');
   const [showNotifications, setShowNotifications] = useState(false);
+  const [showProfileMenu, setShowProfileMenu] = useState(false);
   const [animateStats, setAnimateStats] = useState(false);
   const [sessionFilter, setSessionFilter] = useState('upcoming');
   const [profileImage, setProfileImage] = useState(user?.profileImage || '');
@@ -163,6 +164,21 @@ const Dashboard = ({ onClose, user }) => {
   
   const toggleNotifications = () => {
     setShowNotifications(!showNotifications);
+  };
+
+  const handleProfileMenuToggle = () => {
+    setShowProfileMenu(prev => !prev);
+  };
+
+  const handleSwitchDashboard = (type) => {
+    if (onSwitchDashboard) {
+      onSwitchDashboard(type);
+    } else {
+      // Fallback: just log for now if no handler provided
+      // eslint-disable-next-line no-console
+      console.log(`Switch to ${type} dashboard requested`);
+    }
+    setShowProfileMenu(false);
   };
 
   const markAllAsRead = () => {
@@ -622,13 +638,9 @@ const Dashboard = ({ onClose, user }) => {
                 </div>
               )}
             </div>
-            <div className="user-profile">
+            <div className="user-profile" onClick={handleProfileMenuToggle} style={{ position: 'relative', cursor: 'pointer' }}>
               <span className="user-name">{displayName}</span>
-              {profileImage ? (
-                <img src={profileImage} alt="Avatar" className="user-avatar" style={{ borderRadius: '50%', objectFit: 'cover' }} />
-              ) : (
-                <div className="user-avatar">{initials || 'U'}</div>
-              )}
+              <div className="user-avatar">{initials || 'U'}</div>
             </div>
           </div>
         </div>
