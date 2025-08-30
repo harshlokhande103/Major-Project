@@ -2,12 +2,16 @@ import express from 'express'
 import mongoose from 'mongoose'
 import cors from 'cors'
 import dotenv from 'dotenv'
+import multer from 'multer'
+import path from 'path'
+import fs from 'fs'
 
 dotenv.config()
 
 const app = express()
 app.use(cors())
 app.use(express.json())
+app.use('/uploads', express.static(path.resolve('uploads')))
 
 const mongoUri = process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/claritycall'
 
@@ -32,6 +36,7 @@ const userSchema = new mongoose.Schema(
     lastName: { type: String, required: true, trim: true },
     email: { type: String, required: true, trim: true, lowercase: true, unique: true },
     password: { type: String, required: true },
+    profileImage: { type: String, default: '' },
   },
   { timestamps: true }
 )
@@ -63,6 +68,39 @@ app.post('/api/register', async (req, res) => {
     if (err && err.code === 11000) {
       return res.status(409).json({ message: 'Email already registered' })
     }
+    // eslint-disable-next-line no-console
+    console.error(err)
+    return res.status(500).json({ message: 'Server error' })
+  }
+})
+
+// Multer storage
+const uploadsDir = path.resolve('uploads')
+if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir, { recursive: true })
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, uploadsDir)
+  },
+  filename: function (req, file, cb) {
+    const ext = path.extname(file.originalname)
+    const base = path.basename(file.originalname, ext).replace(/[^a-zA-Z0-9-_]/g, '')
+    cb(null, `${base}-${Date.now()}${ext}`)
+  },
+})
+const upload = multer({ storage })
+
+// Upload avatar
+app.post('/api/users/:id/avatar', upload.single('avatar'), async (req, res) => {
+  try {
+    const { id } = req.params
+    if (!req.file) {
+      return res.status(400).json({ message: 'No file uploaded' })
+    }
+    const relativePath = `/uploads/${req.file.filename}`
+    const user = await User.findByIdAndUpdate(id, { profileImage: relativePath }, { new: true })
+    if (!user) return res.status(404).json({ message: 'User not found' })
+    return res.status(200).json({ id: user._id, email: user.email, firstName: user.firstName, lastName: user.lastName, profileImage: user.profileImage })
+  } catch (err) {
     // eslint-disable-next-line no-console
     console.error(err)
     return res.status(500).json({ message: 'Server error' })

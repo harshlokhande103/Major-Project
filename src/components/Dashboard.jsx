@@ -5,6 +5,8 @@ const Dashboard = ({ onClose, user }) => {
   const [showNotifications, setShowNotifications] = useState(false);
   const [animateStats, setAnimateStats] = useState(false);
   const [sessionFilter, setSessionFilter] = useState('upcoming');
+  const [profileImage, setProfileImage] = useState(user?.profileImage || '');
+  const [uploading, setUploading] = useState(false);
   const [notifications, setNotifications] = useState([
      {
        id: 1,
@@ -28,6 +30,30 @@ const Dashboard = ({ onClose, user }) => {
   
   const displayName = user?.firstName ? `${user.firstName}${user.lastName ? ' ' + user.lastName : ''}` : (user?.email || 'User');
   const initials = (user?.firstName || user?.email || 'U').slice(0,1).toUpperCase() + (user?.lastName ? user.lastName.slice(0,1).toUpperCase() : '');
+
+  const handleAvatarChange = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file || !user?.id) return;
+    try {
+      setUploading(true);
+      const fd = new FormData();
+      fd.append('avatar', file);
+      const res = await fetch(`/api/users/${user.id}/avatar`, {
+        method: 'POST',
+        body: fd,
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        alert(data.message || 'Upload failed');
+        return;
+      }
+      setProfileImage(data.profileImage || '');
+    } catch (err) {
+      alert('Network error');
+    } finally {
+      setUploading(false);
+    }
+  };
  
   // Mock data
   const stats = {
@@ -390,14 +416,23 @@ const Dashboard = ({ onClose, user }) => {
               <h3>Profile Information</h3>
               <div className="profile-edit">
                 <div className="profile-image">
-                  <div className="avatar-large">JD</div>
-                  <button className="change-avatar-btn">Change Photo</button>
+                  {profileImage ? (
+                    <img src={profileImage} alt="Avatar" className="avatar-large" style={{ borderRadius: '50%', objectFit: 'cover' }} />
+                  ) : (
+                    <div className="avatar-large">{initials || 'U'}</div>
+                  )}
+                  <label className="change-avatar-btn" htmlFor="avatar-input">{uploading ? 'Uploading...' : 'Change Photo'}</label>
+                  <input id="avatar-input" type="file" accept="image/*" onChange={handleAvatarChange} style={{ display: 'none' }} />
                 </div>
                 
                 <div className="profile-form">
                   <div className="form-group">
                     <label>Full Name</label>
-                    <input type="text" defaultValue="John Doe" />
+                    <input type="text" defaultValue={displayName} />
+                  </div>
+                  <div className="form-group">
+                    <label>Email</label>
+                    <input type="email" defaultValue={user?.email || ''} />
                   </div>
                   <div className="form-group">
                     <label>Professional Title</label>
@@ -482,7 +517,11 @@ const Dashboard = ({ onClose, user }) => {
             <h2>My Profile</h2>
             <div className="profile-preview">
               <div className="profile-header">
-                <div className="profile-avatar">{initials || 'U'}</div>
+                {profileImage ? (
+                  <img src={profileImage} alt="Avatar" className="profile-avatar" style={{ borderRadius: '50%', objectFit: 'cover' }} />
+                ) : (
+                  <div className="profile-avatar">{initials || 'U'}</div>
+                )}
                 <div className="profile-title">
                   <h3>{displayName}</h3>
                   <p>{user?.email || '—'}</p>
@@ -585,7 +624,11 @@ const Dashboard = ({ onClose, user }) => {
             </div>
             <div className="user-profile">
               <span className="user-name">{displayName}</span>
-              <div className="user-avatar">{initials || 'U'}</div>
+              {profileImage ? (
+                <img src={profileImage} alt="Avatar" className="user-avatar" style={{ borderRadius: '50%', objectFit: 'cover' }} />
+              ) : (
+                <div className="user-avatar">{initials || 'U'}</div>
+              )}
             </div>
           </div>
         </div>
