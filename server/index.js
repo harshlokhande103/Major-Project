@@ -37,7 +37,7 @@ const userSchema = new mongoose.Schema(
 )
 
 // Ensure unique index at DB level
-userSchema.index({ email: 1 }, { unique: true })
+
 
 const User = mongoose.model('User', userSchema)
 

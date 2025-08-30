@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 
-const Dashboard = ({ onClose, user }) => {
+const Dashboard = ({ onClose, user, onSwitchDashboard }) => {
   const [activeTab, setActiveTab] = useState('home');
   const [showNotifications, setShowNotifications] = useState(false);
+  const [showProfileMenu, setShowProfileMenu] = useState(false);
   const [animateStats, setAnimateStats] = useState(false);
   const [sessionFilter, setSessionFilter] = useState('upcoming');
   const [notifications, setNotifications] = useState([
@@ -137,6 +138,21 @@ const Dashboard = ({ onClose, user }) => {
   
   const toggleNotifications = () => {
     setShowNotifications(!showNotifications);
+  };
+
+  const handleProfileMenuToggle = () => {
+    setShowProfileMenu(prev => !prev);
+  };
+
+  const handleSwitchDashboard = (type) => {
+    if (onSwitchDashboard) {
+      onSwitchDashboard(type);
+    } else {
+      // Fallback: just log for now if no handler provided
+      // eslint-disable-next-line no-console
+      console.log(`Switch to ${type} dashboard requested`);
+    }
+    setShowProfileMenu(false);
   };
 
   const markAllAsRead = () => {
@@ -583,9 +599,15 @@ const Dashboard = ({ onClose, user }) => {
                 </div>
               )}
             </div>
-            <div className="user-profile">
+            <div className="user-profile" onClick={handleProfileMenuToggle} style={{ position: 'relative', cursor: 'pointer' }}>
               <span className="user-name">{displayName}</span>
               <div className="user-avatar">{initials || 'U'}</div>
+              {showProfileMenu && (
+                <div className="profile-dropdown" style={{ position: 'absolute', right: 0, top: 'calc(100% + 8px)', background: '#fff', border: '1px solid #e5e7eb', borderRadius: '8px', boxShadow: '0 8px 24px rgba(0,0,0,0.08)', minWidth: '200px', zIndex: 20 }}>
+                  <button className="dropdown-item" onClick={() => handleSwitchDashboard('seeker')} style={{ width: '100%', textAlign: 'left', padding: '10px 12px', background: 'transparent', border: 'none' }}>Seeker Dashboard</button>
+                  <button className="dropdown-item" onClick={() => handleSwitchDashboard('creator')} style={{ width: '100%', textAlign: 'left', padding: '10px 12px', background: 'transparent', border: 'none' }}>Creator Dashboard</button>
+                </div>
+              )}
             </div>
           </div>
         </div>

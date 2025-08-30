@@ -4,6 +4,7 @@ import MentorCard from './components/MentorCard'
 import Login from './components/Login'
 import Register from './components/Register'
 import Dashboard from './components/Dashboard'
+import SeekerDashboard from './components/SeekerDashboard'
 import './App.css'
 
 function App() {
@@ -71,7 +72,20 @@ function App() {
       />
       {view === 'login' && <Login onClose={backHome} onLogin={handleLogin} />}
       {view === 'register' && <Register onClose={backHome} onRegister={handleRegister} />}
-      {view === 'dashboard' && <Dashboard onClose={backHome} user={user} />}
+      {view === 'dashboard' && (
+        <Dashboard 
+          onClose={backHome} 
+          user={user} 
+          onSwitchDashboard={(type) => setView(type === 'seeker' ? 'seekerDashboard' : 'dashboard')} 
+        />
+      )}
+      {view === 'seekerDashboard' && (
+        <SeekerDashboard 
+          onClose={backHome} 
+          user={user} 
+          onSwitchToCreator={() => setView('dashboard')} 
+        />
+      )}
       {view === 'home' && (
       <main className="hero">
         <section className="hero-left">
