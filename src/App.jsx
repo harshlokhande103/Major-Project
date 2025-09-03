@@ -51,14 +51,14 @@ function App() {
   // Update login handler to set logged in state
   const handleLogin = (loggedInUser) => {
     setIsLoggedIn(true);
-    setUser(loggedInUser || null);
+    setUser(loggedInUser);
     setView('dashboard');
   };
   
   // Update register handler to set logged in state
   const handleRegister = (registeredUser) => {
     setIsLoggedIn(true);
-    setUser(registeredUser || null);
+    setUser(registeredUser);
     setView('dashboard');
   };
   

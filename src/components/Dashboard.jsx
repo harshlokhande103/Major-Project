@@ -6,8 +6,6 @@ const Dashboard = ({ onClose, user, onSwitchDashboard }) => {
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const [animateStats, setAnimateStats] = useState(false);
   const [sessionFilter, setSessionFilter] = useState('upcoming');
-  const [profileImage, setProfileImage] = useState(user?.profileImage || '');
-  const [uploading, setUploading] = useState(false);
   const [notifications, setNotifications] = useState([
      {
        id: 1,
@@ -17,7 +15,7 @@ const Dashboard = ({ onClose, user, onSwitchDashboard }) => {
      },
      {
        id: 2,
-       message: 'Payment received for Resume Review session',
+       message: 'Payment received for Resume Review session', 
        time: '1 day ago',
        read: true
      },
@@ -32,30 +30,6 @@ const Dashboard = ({ onClose, user, onSwitchDashboard }) => {
   const displayName = user?.firstName ? `${user.firstName}${user.lastName ? ' ' + user.lastName : ''}` : (user?.email || 'User');
   const initials = (user?.firstName || user?.email || 'U').slice(0,1).toUpperCase() + (user?.lastName ? user.lastName.slice(0,1).toUpperCase() : '');
 
-  const handleAvatarChange = async (e) => {
-    const file = e.target.files?.[0];
-    if (!file || !user?.id) return;
-    try {
-      setUploading(true);
-      const fd = new FormData();
-      fd.append('avatar', file);
-      const res = await fetch(`/api/users/${user.id}/avatar`, {
-        method: 'POST',
-        body: fd,
-      });
-      const data = await res.json().catch(() => ({}));
-      if (!res.ok) {
-        alert(data.message || 'Upload failed');
-        return;
-      }
-      setProfileImage(data.profileImage || '');
-    } catch (err) {
-      alert('Network error');
-    } finally {
-      setUploading(false);
-    }
-  };
- 
   // Mock data
   const stats = {
     totalSessions: 24,
@@ -64,7 +38,7 @@ const Dashboard = ({ onClose, user, onSwitchDashboard }) => {
     profileViews: 152,
     conversionRate: '68%'
   };
-  
+
   const upcomingSessions = [
     {
       id: 1,
@@ -88,7 +62,7 @@ const Dashboard = ({ onClose, user, onSwitchDashboard }) => {
       status: 'pending'
     }
   ];
-  
+
   const pastSessions = [
     {
       id: 4,
@@ -126,7 +100,7 @@ const Dashboard = ({ onClose, user, onSwitchDashboard }) => {
       status: 'completed'
     }
   ];
-  
+
   const cancelledSessions = [
     {
       id: 7,
@@ -161,7 +135,7 @@ const Dashboard = ({ onClose, user, onSwitchDashboard }) => {
       reason: 'Personal emergency'
     }
   ];
-  
+
   const toggleNotifications = () => {
     setShowNotifications(!showNotifications);
   };
@@ -184,12 +158,12 @@ const Dashboard = ({ onClose, user, onSwitchDashboard }) => {
   const markAllAsRead = () => {
     setNotifications(notifications.map(notif => ({ ...notif, read: true })));
   };
-  
+
   useEffect(() => {
     // Trigger stats animation after component mounts
     setTimeout(() => setAnimateStats(true), 300);
   }, []);
-  
+
   const renderTabContent = () => {
     switch(activeTab) {
       case 'home':
@@ -260,7 +234,7 @@ const Dashboard = ({ onClose, user, onSwitchDashboard }) => {
                 </div>
                 <div className="performance-metrics">
                   <div className="metric-card">
-                    <div className="metric-icon">👁️</div>
+                    <div className="metric-icon">👁</div>
                     <div className="metric-details">
                       <h3>Profile Views</h3>
                       <p>{stats.profileViews} views this month</p>
@@ -432,23 +406,14 @@ const Dashboard = ({ onClose, user, onSwitchDashboard }) => {
               <h3>Profile Information</h3>
               <div className="profile-edit">
                 <div className="profile-image">
-                  {profileImage ? (
-                    <img src={profileImage} alt="Avatar" className="avatar-large" style={{ borderRadius: '50%', objectFit: 'cover' }} />
-                  ) : (
-                    <div className="avatar-large">{initials || 'U'}</div>
-                  )}
-                  <label className="change-avatar-btn" htmlFor="avatar-input">{uploading ? 'Uploading...' : 'Change Photo'}</label>
-                  <input id="avatar-input" type="file" accept="image/*" onChange={handleAvatarChange} style={{ display: 'none' }} />
+                  <div className="avatar-large">JD</div>
+                  <button className="change-avatar-btn">Change Photo</button>
                 </div>
                 
                 <div className="profile-form">
                   <div className="form-group">
                     <label>Full Name</label>
-                    <input type="text" defaultValue={displayName} />
-                  </div>
-                  <div className="form-group">
-                    <label>Email</label>
-                    <input type="email" defaultValue={user?.email || ''} />
+                    <input type="text" defaultValue="John Doe" />
                   </div>
                   <div className="form-group">
                     <label>Professional Title</label>
@@ -533,8 +498,16 @@ const Dashboard = ({ onClose, user, onSwitchDashboard }) => {
             <h2>My Profile</h2>
             <div className="profile-preview">
               <div className="profile-header">
-                {profileImage ? (
-                  <img src={profileImage} alt="Avatar" className="profile-avatar" style={{ borderRadius: '50%', objectFit: 'cover' }} />
+                {user?.profileImage ? (
+                  <img 
+                    src={`${user.profileImage}?${Date.now()}`} 
+                    alt="Profile"
+                    className="profile-avatar"
+                    onError={(e) => {
+                      e.target.onerror = null;
+                      e.target.style.display = 'none';
+                    }}
+                  />
                 ) : (
                   <div className="profile-avatar">{initials || 'U'}</div>
                 )}
@@ -599,7 +572,7 @@ const Dashboard = ({ onClose, user, onSwitchDashboard }) => {
             className={`menu-item ${activeTab === 'settings' ? 'active' : ''}`}
             onClick={() => setActiveTab('settings')}
           >
-            <span className="menu-icon">⚙️</span>
+            <span className="menu-icon">⚙</span>
             <span>Settings</span>
           </div>
           {/* Analytics module removed as requested */}
@@ -641,6 +614,12 @@ const Dashboard = ({ onClose, user, onSwitchDashboard }) => {
             <div className="user-profile" onClick={handleProfileMenuToggle} style={{ position: 'relative', cursor: 'pointer' }}>
               <span className="user-name">{displayName}</span>
               <div className="user-avatar">{initials || 'U'}</div>
+              {showProfileMenu && (
+                <div className="profile-dropdown" style={{ position: 'absolute', right: 0, top: 'calc(100% + 8px)', background: '#fff', border: '1px solid #e5e7eb', borderRadius: '8px', boxShadow: '0 8px 24px rgba(0,0,0,0.08)', minWidth: '200px', zIndex: 20 }}>
+                  <button className="dropdown-item" onClick={() => handleSwitchDashboard('seeker')} style={{ width: '100%', textAlign: 'left', padding: '10px 12px', background: 'transparent', border: 'none' }}>Seeker Dashboard</button>
+                  <button className="dropdown-item" onClick={() => handleSwitchDashboard('creator')} style={{ width: '100%', textAlign: 'left', padding: '10px 12px', background: 'transparent', border: 'none' }}>Creator Dashboard</button>
+                </div>
+              )}
             </div>
           </div>
         </div>
