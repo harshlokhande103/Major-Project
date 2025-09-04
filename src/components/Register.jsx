@@ -5,6 +5,9 @@ const Register = ({ onClose, onRegister }) => {
   const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [bio, setBio] = useState('');
+  const [title, setTitle] = useState('');
+  const [expertise, setExpertise] = useState('');
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -13,7 +16,7 @@ const Register = ({ onClose, onRegister }) => {
         const res = await fetch('/api/register', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ firstName, lastName, email, password }),
+          body: JSON.stringify({ firstName, lastName, email, password, bio, title, expertise }),
         });
         const data = await res.json().catch(() => ({}));
         if (!res.ok) {
@@ -77,6 +80,32 @@ const Register = ({ onClose, onRegister }) => {
             onChange={(e) => setPassword(e.target.value)}
             placeholder="••••••••"
             required
+          />
+        </label>
+        <label>
+          Bio
+          <textarea
+            value={bio}
+            onChange={(e) => setBio(e.target.value)}
+            placeholder="Tell us about yourself..."
+          />
+        </label>
+        <label>
+          Title
+          <input
+            type="text"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            placeholder="e.g., Software Engineer, Marketing Manager"
+          />
+        </label>
+        <label>
+          Expertise
+          <input
+            type="text"
+            value={expertise}
+            onChange={(e) => setExpertise(e.target.value)}
+            placeholder="e.g., React, Node.js, Digital Marketing"
           />
         </label>
         <button type="submit" className="cta-primary" style={{ width: '100%' }}>Create Account</button>

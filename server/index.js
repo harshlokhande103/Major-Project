@@ -37,6 +37,9 @@ const userSchema = new mongoose.Schema(
     email: { type: String, required: true, trim: true, lowercase: true, unique: true },
     password: { type: String, required: true },
     profileImage: { type: String, default: '' },
+    bio: { type: String, default: '' },
+    title: { type: String, default: '' },
+    expertise: { type: String, default: '' },
   },
   { timestamps: true }
 )
@@ -49,7 +52,7 @@ const User = mongoose.model('User', userSchema)
 // Routes
 app.post('/api/register', async (req, res) => {
   try {
-    const { firstName, lastName, email, password } = req.body
+    const { firstName, lastName, email, password, bio, title, expertise } = req.body
     if (!firstName || !lastName || !email || !password) {
       return res.status(400).json({ message: 'All fields are required' })
     }
@@ -61,7 +64,7 @@ app.post('/api/register', async (req, res) => {
     }
 
     // NOTE: In production, hash the password with bcrypt
-    const user = await User.create({ firstName, lastName, email, password })
+    const user = await User.create({ firstName, lastName, email, password, bio, title, expertise })
     return res.status(201).json({ id: user._id, email: user.email })
   } catch (err) {
     // Duplicate key error (unique index violation)
