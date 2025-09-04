@@ -209,6 +209,13 @@ const Dashboard = ({ onClose, user, onSwitchDashboard }) => {
     }
   };
 
+  const handleLogout = () => {
+    // Clear user data from local storage or context
+    localStorage.removeItem('user'); // Assuming user data is stored in localStorage
+    // Redirect to login page or home page
+    window.location.href = '/login'; // Adjust this to your login route
+  };
+
   useEffect(() => {
     // Trigger stats animation after component mounts
     setTimeout(() => setAnimateStats(true), 300);
@@ -615,6 +622,7 @@ const Dashboard = ({ onClose, user, onSwitchDashboard }) => {
               <div className="profile-actions">
                 <button className="edit-profile-btn" onClick={() => setActiveTab('settings')}>Edit Profile</button>
                 <button className="view-public-btn">View Public Profile</button>
+                <button className="logout-btn" onClick={handleLogout}>Logout</button>
               </div>
             </div>
           </div>
