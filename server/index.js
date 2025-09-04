@@ -39,7 +39,7 @@ const userSchema = new mongoose.Schema(
     profileImage: { type: String, default: '' },
     bio: { type: String, default: '' },
     title: { type: String, default: '' },
-    expertise: { type: String, default: '' },
+    expertise: { type: [String], default: [] },
   },
   { timestamps: true }
 )
@@ -65,7 +65,7 @@ app.post('/api/register', async (req, res) => {
 
     // NOTE: In production, hash the password with bcrypt
     const user = await User.create({ firstName, lastName, email, password, bio, title, expertise })
-    return res.status(201).json({ id: user._id, email: user.email })
+    return res.status(201).json(user)
   } catch (err) {
     // Duplicate key error (unique index violation)
     if (err && err.code === 11000) {
@@ -128,13 +128,38 @@ app.post('/api/login', async (req, res) => {
       return res.status(401).json({ message: 'Invalid credentials' })
     }
 
-    return res.status(200).json({ id: user._id, email: user.email, firstName: user.firstName })
+    return res.status(200).json(user)
   } catch (err) {
     // eslint-disable-next-line no-console
     console.error(err)
     return res.status(500).json({ message: 'Server error' })
   }
 })
+
+app.put('/api/profile', async (req, res) => {
+  const { _id, fullName, professionalTitle, bio, expertise } = req.body;
+
+  try {
+    const user = await User.findById(_id);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    // Split fullName into firstName and lastName
+    const nameParts = fullName.split(' ');
+    user.firstName = nameParts[0];
+    user.lastName = nameParts.slice(1).join(' ');
+
+    user.title = professionalTitle;
+    user.bio = bio;
+    user.expertise = expertise;
+
+    await user.save();
+    res.status(200).json(user);
+  } catch (error) {
+    res.status(500).json({ message: 'Server error', error });
+  }
+});
 
 const PORT = process.env.PORT || 5000
 app.listen(PORT, () => {

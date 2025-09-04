@@ -16,7 +16,7 @@ const Register = ({ onClose, onRegister }) => {
         const res = await fetch('/api/register', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ firstName, lastName, email, password, bio, title, expertise }),
+          body: JSON.stringify({ firstName, lastName, email, password, bio, title, expertise: expertise.split(',').map(item => item.trim()) }),
         });
         const data = await res.json().catch(() => ({}));
         if (!res.ok) {

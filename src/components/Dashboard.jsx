@@ -6,6 +6,11 @@ const Dashboard = ({ onClose, user, onSwitchDashboard }) => {
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const [animateStats, setAnimateStats] = useState(false);
   const [sessionFilter, setSessionFilter] = useState('upcoming');
+  const [fullName, setFullName] = useState(user?.firstName && user?.lastName ? `${user.firstName} ${user.lastName}` : '');
+  const [professionalTitle, setProfessionalTitle] = useState(user?.title || '');
+  const [bio, setBio] = useState(user?.bio || '');
+  const [expertiseTags, setExpertiseTags] = useState(Array.isArray(user?.expertise) ? user.expertise : []);
+  const [newExpertiseTag, setNewExpertiseTag] = useState('');
   const [notifications, setNotifications] = useState([
      {
        id: 1,
@@ -159,6 +164,51 @@ const Dashboard = ({ onClose, user, onSwitchDashboard }) => {
     setNotifications(notifications.map(notif => ({ ...notif, read: true })));
   };
 
+  const handleAddExpertise = (e) => {
+    if (e.key === 'Enter' && newExpertiseTag.trim() !== '') {
+      e.preventDefault();
+      setExpertiseTags([...expertiseTags, newExpertiseTag.trim()]);
+      setNewExpertiseTag('');
+    }
+  };
+
+  const handleRemoveExpertise = (tagToRemove) => {
+    setExpertiseTags(expertiseTags.filter(tag => tag !== tagToRemove));
+  };
+
+  const handleSaveChanges = async () => {
+    try {
+      const response = await fetch('/api/profile', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          _id: user._id,
+          fullName,
+          professionalTitle,
+          bio,
+          expertise: expertiseTags,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const updatedUser = await response.json();
+      // Assuming onLogin is passed down from App.jsx to update the user state
+      // This is a placeholder, you might need to adjust how user state is updated in App.jsx
+      if (onSwitchDashboard) { // Re-using onSwitchDashboard to trigger a user state update in App.jsx
+        onSwitchDashboard('dashboard', updatedUser); // Pass updatedUser back to App.jsx
+      }
+      alert('Profile changes saved successfully!');
+    } catch (error) {
+      console.error('Error saving profile changes:', error);
+      alert('Failed to save profile changes.');
+    }
+  };
+
   useEffect(() => {
     // Trigger stats animation after component mounts
     setTimeout(() => setAnimateStats(true), 300);
@@ -174,6 +224,8 @@ const Dashboard = ({ onClose, user, onSwitchDashboard }) => {
                 <h2>Welcome back, {displayName}!</h2>
                 <p>Signed in as {user?.email || '—'}</p>
                 <p>Here's what's happening with your mentoring business today.</p>
+                {user?.title && <p className="user-title">Title: {user.title}</p>}
+                {user?.bio && <p className="user-bio">Bio: {user.bio}</p>}
               </div>
               <div className="quick-actions">
                 <button className="action-btn primary">Create Service</button>
@@ -182,6 +234,18 @@ const Dashboard = ({ onClose, user, onSwitchDashboard }) => {
             </div>
             
             <div className="stats-container">
+              {user?.expertise && Array.isArray(user.expertise) && user.expertise.length > 0 && (
+                <div className="stat-card full-width">
+                  <h3>My Expertise</h3>
+                  <div className="expertise-tags">
+                    {user.expertise.map((exp, index) => (
+                      <span key={index} className="expertise-tag">{exp}</span>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+
               <div className="stat-card">
                 <h3>Total Sessions</h3>
                 <p className="stat-value">{stats.totalSessions}</p>
@@ -413,27 +477,37 @@ const Dashboard = ({ onClose, user, onSwitchDashboard }) => {
                 <div className="profile-form">
                   <div className="form-group">
                     <label>Full Name</label>
-                    <input type="text" defaultValue="John Doe" />
+                    <input type="text" value={fullName} onChange={(e) => setFullName(e.target.value)} />
                   </div>
                   <div className="form-group">
                     <label>Professional Title</label>
-                    <input type="text" defaultValue="Career Coach & Mentor" />
+                    <input type="text" value={professionalTitle} onChange={(e) => setProfessionalTitle(e.target.value)} />
                   </div>
                   <div className="form-group">
                     <label>Bio</label>
-                    <textarea defaultValue="Experienced career coach with 10+ years helping professionals achieve their career goals."></textarea>
+                    <textarea value={bio} onChange={(e) => setBio(e.target.value)}></textarea>
                   </div>
                   <div className="form-group">
                     <label>Expertise</label>
                     <div className="tags-input">
-                      <span className="tag">Career Guidance</span>
-                      <span className="tag">Resume Review</span>
-                      <span className="tag">Interview Prep</span>
-                      <input type="text" placeholder="Add expertise..." />
+                      {expertiseTags.map((tag, index) => (
+                        <span key={index} className="tag">
+                          {tag}
+                          <button type="button" onClick={() => handleRemoveExpertise(tag)}>×</button>
+                        </span>
+                      ))}
+                      <input
+                        type="text"
+                        placeholder="Add expertise..."
+                        value={newExpertiseTag}
+                        onChange={(e) => setNewExpertiseTag(e.target.value)}
+                        onKeyDown={handleAddExpertise}
+                      />
                     </div>
                   </div>
                 </div>
               </div>
+              <button className="cta-primary" onClick={handleSaveChanges} style={{ marginTop: '1.5rem' }}>Save Changes</button>
             </div>
             
             <div className="settings-section">
@@ -516,18 +590,28 @@ const Dashboard = ({ onClose, user, onSwitchDashboard }) => {
                   <p>{user?.email || '—'}</p>
                 </div>
               </div>
-              <div className="profile-bio">
-                <h3>About Me</h3>
-                <p>Experienced career coach with 10+ years helping professionals achieve their career goals.</p>
-              </div>
-              <div className="profile-expertise">
-                <h3>Areas of Expertise</h3>
-                <div className="expertise-tags">
-                  <span className="tag">Career Guidance</span>
-                  <span className="tag">Resume Review</span>
-                  <span className="tag">Interview Prep</span>
+              {user?.title && (
+                <div className="profile-title-display">
+                  <h3>Title</h3>
+                  <p>{user.title}</p>
                 </div>
-              </div>
+              )}
+              {user?.bio && (
+                <div className="profile-bio">
+                  <h3>About Me</h3>
+                  <p>{user.bio}</p>
+                </div>
+              )}
+              {user?.expertise && Array.isArray(user.expertise) && user.expertise.length > 0 && (
+                <div className="profile-expertise">
+                  <h3>Areas of Expertise</h3>
+                  <div className="expertise-tags">
+                    {user.expertise.map((exp, index) => (
+                      <span key={index} className="tag">{exp}</span>
+                    ))}
+                  </div>
+                </div>
+              )}
               <div className="profile-actions">
                 <button className="edit-profile-btn" onClick={() => setActiveTab('settings')}>Edit Profile</button>
                 <button className="view-public-btn">View Public Profile</button>

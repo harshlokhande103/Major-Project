@@ -51,6 +51,10 @@ function App() {
   // Update login handler to set logged in state
   const handleLogin = (loggedInUser) => {
     setIsLoggedIn(true);
+    // Ensure expertise is an array
+    if (loggedInUser && typeof loggedInUser.expertise === 'string') {
+      loggedInUser.expertise = loggedInUser.expertise.split(',').map(item => item.trim());
+    }
     setUser(loggedInUser);
     setView('dashboard');
   };
@@ -58,6 +62,10 @@ function App() {
   // Update register handler to set logged in state
   const handleRegister = (registeredUser) => {
     setIsLoggedIn(true);
+    // Ensure expertise is an array
+    if (registeredUser && typeof registeredUser.expertise === 'string') {
+      registeredUser.expertise = registeredUser.expertise.split(',').map(item => item.trim());
+    }
     setUser(registeredUser);
     setView('dashboard');
   };
@@ -76,7 +84,12 @@ function App() {
         <Dashboard 
           onClose={backHome} 
           user={user} 
-          onSwitchDashboard={(type) => setView(type === 'seeker' ? 'seekerDashboard' : 'dashboard')} 
+          onSwitchDashboard={(dashboardType, updatedUser = null) => {
+            setView(dashboardType === 'seeker' ? 'seekerDashboard' : 'dashboard');
+            if (updatedUser) {
+              setUser(updatedUser);
+            }
+          }} 
         />
       )}
       {view === 'seekerDashboard' && (

@@ -130,9 +130,21 @@ const SeekerDashboard = ({ onClose, user, onSwitchToCreator }) => {
         <header className="seeker-header">
           <h1>{active === 'home' ? 'Home' : active[0].toUpperCase() + active.slice(1)}</h1>
           <div className="seeker-user">
-            <span className="seeker-user-name">{displayName}</span>
-            <div className="seeker-avatar">{initials}</div>
-          </div>
+              <span className="seeker-user-name">{displayName}</span>
+              <div className="seeker-avatar">{initials}</div>
+            </div>
+            {user?.title && <p className="seeker-user-title">Title: {user.title}</p>}
+            {user?.bio && <p className="seeker-user-bio">Bio: {user.bio}</p>}
+            {user?.expertise && Array.isArray(user.expertise) && user.expertise.length > 0 && (
+              <div className="seeker-expertise">
+                <h4>My Expertise:</h4>
+                <div className="expertise-tags">
+                  {user.expertise.map((exp, index) => (
+                    <span key={index} className="expertise-tag">{exp}</span>
+                  ))}
+                </div>
+              </div>
+            )}
         </header>
 
         {active === 'home' && (
