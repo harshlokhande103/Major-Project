@@ -13,7 +13,7 @@ app.use(cors())
 app.use(express.json())
 app.use('/uploads', express.static(path.resolve('uploads')))
 
-const mongoUri = process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/claritycall'
+const mongoUri = 'mongodb+srv://harshlokhande103_db_user:8IziN6qrdtqIbKTO@cluster0.2kuc6io.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0'
 
 // Mongoose connection
 mongoose.set('strictQuery', true)
@@ -166,5 +166,3 @@ app.listen(PORT, () => {
   // eslint-disable-next-line no-console
   console.log(`API listening on http://localhost:${PORT}`)
 })
-
-
