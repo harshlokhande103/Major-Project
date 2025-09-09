@@ -5,6 +5,7 @@ import dotenv from 'dotenv'
 import multer from 'multer'
 import path from 'path'
 import fs from 'fs'
+import bcrypt from 'bcryptjs'
 
 dotenv.config()
 
@@ -13,12 +14,12 @@ app.use(cors())
 app.use(express.json())
 app.use('/uploads', express.static(path.resolve('uploads')))
 
-const mongoUri = 'mongodb+srv://harshlokhande103_db_user:8IziN6qrdtqIbKTO@cluster0.2kuc6io.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0'
+const mongoUri = 'mongodb+srv://muskanbagde64_db_user:BNMxdClEpjz0KyTr@cluster0.puecght.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0'
 
 // Mongoose connection
 mongoose.set('strictQuery', true)
 mongoose
-  .connect(mongoUri)
+  .connect(mongoUri, { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => {
     // eslint-disable-next-line no-console
     console.log('MongoDB connected')
@@ -63,8 +64,8 @@ app.post('/api/register', async (req, res) => {
       return res.status(409).json({ message: 'Email already registered' })
     }
 
-    // NOTE: In production, hash the password with bcrypt
-    const user = await User.create({ firstName, lastName, email, password, bio, title, expertise })
+    const hashedPassword = await bcrypt.hash(password, 10)
+    const user = await User.create({ firstName, lastName, email, password: hashedPassword, bio, title, expertise })
     return res.status(201).json(user)
   } catch (err) {
     // Duplicate key error (unique index violation)
@@ -122,8 +123,7 @@ app.post('/api/login', async (req, res) => {
       return res.status(401).json({ message: 'Invalid credentials' })
     }
 
-    // NOTE: In production compare hashed passwords
-    const isMatch = user.password === password
+    const isMatch = await bcrypt.compare(password, user.password)
     if (!isMatch) {
       return res.status(401).json({ message: 'Invalid credentials' })
     }
@@ -161,7 +161,7 @@ app.put('/api/profile', async (req, res) => {
   }
 });
 
-const PORT = process.env.PORT || 5000
+const PORT = process.env.PORT || 5001
 app.listen(PORT, () => {
   // eslint-disable-next-line no-console
   console.log(`API listening on http://localhost:${PORT}`)
