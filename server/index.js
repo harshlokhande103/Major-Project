@@ -14,7 +14,7 @@ app.use(cors())
 app.use(express.json())
 app.use('/uploads', express.static(path.resolve('uploads')))
 
-const mongoUri = 'mongodb+srv://muskanbagde64_db_user:BNMxdClEpjz0KyTr@cluster0.puecght.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0'
+const mongoUri = 'mongodb://localhost:27017/Clarity_Call'
 
 // Mongoose connection
 mongoose.set('strictQuery', true)
