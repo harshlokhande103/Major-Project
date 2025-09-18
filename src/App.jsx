@@ -1,14 +1,21 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import Navbar from './components/Navbar'
 import MentorCard from './components/MentorCard'
 import Login from './components/Login'
 import Register from './components/Register'
 import Dashboard from './components/Dashboard'
 import SeekerDashboard from './components/SeekerDashboard'
+import AdminDashboard from './components/admin/AdminDashboard'
 import './App.css'
 
 function App() {
-  const [view, setView] = useState('home');
+  const initialView = (() => {
+    const path = window.location.pathname || '/'
+    if (path.startsWith('/admin')) return 'admin'
+    if (path.startsWith('/dashboard')) return 'dashboard'
+    return 'home'
+  })()
+  const [view, setView] = useState(initialView);
   const [user, setUser] = useState(null);
   const mentors = [
     {
@@ -51,13 +58,30 @@ function App() {
   // Update login handler to set logged in state
   const handleLogin = (loggedInUser) => {
     setIsLoggedIn(true);
-    // Ensure expertise is an array
+    // If admin, route to admin dashboard without altering UI design
+    if ((typeof loggedInUser === 'string' && loggedInUser === 'admin') || (loggedInUser && loggedInUser.role === 'admin')) {
+      setUser({ role: 'admin' });
+      setView('admin');
+      return;
+    }
+    // Ensure expertise is an array for normal users
     if (loggedInUser && typeof loggedInUser.expertise === 'string') {
       loggedInUser.expertise = loggedInUser.expertise.split(',').map(item => item.trim());
     }
     setUser(loggedInUser);
     setView('dashboard');
   };
+
+  // Keep URL in sync with view (minimal routing)
+  useEffect(() => {
+    if (view === 'admin') {
+      window.history.pushState({}, '', '/admin');
+    } else if (view === 'dashboard') {
+      window.history.pushState({}, '', '/dashboard');
+    } else if (view === 'home') {
+      window.history.pushState({}, '', '/');
+    }
+  }, [view])
   
   // Update register handler to set logged in state
   const handleRegister = (registeredUser) => {
@@ -98,6 +122,9 @@ function App() {
           user={user} 
           onSwitchToCreator={() => setView('dashboard')} 
         />
+      )}
+      {view === 'admin' && (
+        <AdminDashboard />
       )}
       {view === 'home' && (
       <main className="hero">
