@@ -6,6 +6,14 @@ const Dashboard = ({ onClose, user, onSwitchDashboard }) => {
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const [animateStats, setAnimateStats] = useState(false);
   const [sessionFilter, setSessionFilter] = useState('upcoming');
+  const [showVerificationForm, setShowVerificationForm] = useState(false);
+  const [verificationData, setVerificationData] = useState({
+    name: '',
+    age: '',
+    domain: '',
+    linkedin: '',
+    portfolio: ''
+  });
   const [fullName, setFullName] = useState(user?.firstName && user?.lastName ? `${user.firstName} ${user.lastName}` : '');
   const [professionalTitle, setProfessionalTitle] = useState(user?.title || '');
   const [bio, setBio] = useState(user?.bio || '');
@@ -216,6 +224,27 @@ const Dashboard = ({ onClose, user, onSwitchDashboard }) => {
     window.location.href = '/login'; // Adjust this to your login route
   };
 
+  const handleVerificationSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      // Here you would typically send the verification data to your backend
+      console.log('Verification data:', verificationData);
+      alert('Profile verification submitted successfully! We will review your information and get back to you soon.');
+      setShowVerificationForm(false);
+      setVerificationData({ name: '', age: '', domain: '', linkedin: '', portfolio: '' });
+    } catch (error) {
+      console.error('Error submitting verification:', error);
+      alert('Failed to submit verification. Please try again.');
+    }
+  };
+
+  const handleVerificationChange = (field, value) => {
+    setVerificationData(prev => ({
+      ...prev,
+      [field]: value
+    }));
+  };
+
   useEffect(() => {
     // Trigger stats animation after component mounts
     setTimeout(() => setAnimateStats(true), 300);
@@ -237,6 +266,12 @@ const Dashboard = ({ onClose, user, onSwitchDashboard }) => {
               <div className="quick-actions">
                 <button className="action-btn primary">Create Service</button>
                 <button className="action-btn secondary">Share Profile</button>
+                <button 
+                  className="action-btn verify" 
+                  onClick={() => setShowVerificationForm(true)}
+                >
+                  ✅ Verify Profile
+                </button>
               </div>
             </div>
             
@@ -722,6 +757,98 @@ const Dashboard = ({ onClose, user, onSwitchDashboard }) => {
       </div>
       
       <button className="close-btn" onClick={onClose}>×</button>
+
+      {/* Verification Form Modal */}
+      {showVerificationForm && (
+        <div className="verification-modal">
+          <div className="verification-form-container">
+            <div className="verification-header">
+              <h2>Verify Your Profile</h2>
+              <button 
+                className="close-modal-btn" 
+                onClick={() => setShowVerificationForm(false)}
+              >
+                ×
+              </button>
+            </div>
+            
+            <form onSubmit={handleVerificationSubmit} className="verification-form">
+              <div className="form-group">
+                <label htmlFor="name">Full Name *</label>
+                <input
+                  type="text"
+                  id="name"
+                  value={verificationData.name}
+                  onChange={(e) => handleVerificationChange('name', e.target.value)}
+                  placeholder="Enter your full name"
+                  required
+                />
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="age">Age *</label>
+                <input
+                  type="number"
+                  id="age"
+                  value={verificationData.age}
+                  onChange={(e) => handleVerificationChange('age', e.target.value)}
+                  placeholder="Enter your age"
+                  min="18"
+                  max="100"
+                  required
+                />
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="domain">Domain/Field of Expertise *</label>
+                <input
+                  type="text"
+                  id="domain"
+                  value={verificationData.domain}
+                  onChange={(e) => handleVerificationChange('domain', e.target.value)}
+                  placeholder="e.g., Software Development, Marketing, Finance"
+                  required
+                />
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="linkedin">LinkedIn Profile URL</label>
+                <input
+                  type="url"
+                  id="linkedin"
+                  value={verificationData.linkedin}
+                  onChange={(e) => handleVerificationChange('linkedin', e.target.value)}
+                  placeholder="https://linkedin.com/in/yourprofile"
+                />
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="portfolio">Portfolio/Website URL</label>
+                <input
+                  type="url"
+                  id="portfolio"
+                  value={verificationData.portfolio}
+                  onChange={(e) => handleVerificationChange('portfolio', e.target.value)}
+                  placeholder="https://yourportfolio.com"
+                />
+              </div>
+
+              <div className="form-actions">
+                <button 
+                  type="button" 
+                  className="cancel-btn"
+                  onClick={() => setShowVerificationForm(false)}
+                >
+                  Cancel
+                </button>
+                <button type="submit" className="submit-btn">
+                  Submit for Verification
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
