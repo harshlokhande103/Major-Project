@@ -5,8 +5,8 @@ const SeekerDashboard = ({ onClose, user, onSwitchToCreator }) => {
   const [showDropdown, setShowDropdown] = useState(false);
 
   const email = user?.email || 'user@example.com';
-  const displayName = user?.firstName ? `${user.firstName}${user.lastName ? ' ' + user.lastName : ''}` : email;
-  const initials = (user?.firstName || email || 'U').slice(0,1).toUpperCase() + (user?.lastName ? user.lastName.slice(0,1).toUpperCase() : '');
+  const displayName = user?.firstName ? `${user?.firstName}${user?.lastName ? ' ' + user?.lastName : ''}` : email;
+  const initials = (user?.firstName || email || 'U').slice(0,1).toUpperCase() + (user?.lastName ? user?.lastName.slice(0,1).toUpperCase() : '');
 
   const handleSwitchToCreator = () => {
     setShowDropdown(false);
@@ -133,13 +133,13 @@ const SeekerDashboard = ({ onClose, user, onSwitchToCreator }) => {
               <span className="seeker-user-name">{displayName}</span>
               <div className="seeker-avatar">{initials}</div>
             </div>
-            {user?.title && <p className="seeker-user-title">Title: {user.title}</p>}
-            {user?.bio && <p className="seeker-user-bio">Bio: {user.bio}</p>}
-            {user?.expertise && Array.isArray(user.expertise) && user.expertise.length > 0 && (
+            {user?.title && <p className="seeker-user-title">Title: {user?.title}</p>}
+            {user?.bio && <p className="seeker-user-bio">Bio: {user?.bio}</p>}
+            {user?.expertise && Array.isArray(user?.expertise) && user?.expertise.length > 0 && (
               <div className="seeker-expertise">
                 <h4>My Expertise:</h4>
                 <div className="expertise-tags">
-                  {user.expertise.map((exp, index) => (
+                  {user?.expertise?.map((exp, index) => (
                     <span key={index} className="expertise-tag">{exp}</span>
                   ))}
                 </div>
@@ -231,7 +231,7 @@ const SeekerDashboard = ({ onClose, user, onSwitchToCreator }) => {
                 <div className="profile-avatar-section">
                   <div className="profile-avatar-large">
                     {user?.profileImage ? (
-                      <img src={user.profileImage} alt={displayName} />
+                      <img src={user?.profileImage} alt={displayName} />
                     ) : (
                       <span>{initials}</span>
                     )}

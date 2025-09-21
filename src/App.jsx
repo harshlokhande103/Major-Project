@@ -6,11 +6,13 @@ import Register from './components/Register'
 import Dashboard from './components/Dashboard'
 import SeekerDashboard from './components/SeekerDashboard'
 import AdminDashboard from './components/admin/AdminDashboard'
+import MentorApplicationsPanel from './components/admin/MentorApplicationsPanel'
 import './App.css'
 
 function App() {
   const initialView = (() => {
     const path = window.location.pathname || '/'
+    if (path.startsWith('/admin/mentor-applications')) return 'adminMentorApplications'
     if (path.startsWith('/admin')) return 'admin'
     if (path.startsWith('/dashboard')) return 'dashboard'
     return 'home'
@@ -74,7 +76,9 @@ function App() {
 
   // Keep URL in sync with view (minimal routing)
   useEffect(() => {
-    if (view === 'admin') {
+    if (view === 'adminMentorApplications') {
+      window.history.pushState({}, '', '/admin/mentor-applications');
+    } else if (view === 'admin') {
       window.history.pushState({}, '', '/admin');
     } else if (view === 'dashboard') {
       window.history.pushState({}, '', '/dashboard');
@@ -104,7 +108,7 @@ function App() {
       />
       {view === 'login' && <Login onClose={backHome} onLogin={handleLogin} />}
       {view === 'register' && <Register onClose={backHome} onRegister={handleRegister} />}
-      {view === 'dashboard' && (
+      {view === 'dashboard' && user && (
         <Dashboard 
           onClose={backHome} 
           user={user} 
@@ -125,6 +129,9 @@ function App() {
       )}
       {view === 'admin' && (
         <AdminDashboard />
+      )}
+      {view === 'adminMentorApplications' && (
+        <MentorApplicationsPanel />
       )}
       {view === 'home' && (
       <main className="hero">

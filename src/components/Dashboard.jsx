@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import MentorApplicationForm from './MentorApplicationForm';
 
 const Dashboard = ({ onClose, user, onSwitchDashboard }) => {
   const [activeTab, setActiveTab] = useState('home');
@@ -7,6 +8,7 @@ const Dashboard = ({ onClose, user, onSwitchDashboard }) => {
   const [animateStats, setAnimateStats] = useState(false);
   const [sessionFilter, setSessionFilter] = useState('upcoming');
   const [showVerificationForm, setShowVerificationForm] = useState(false);
+  const [showMentorApplicationForm, setShowMentorApplicationForm] = useState(false);
   const [verificationData, setVerificationData] = useState({
     name: '',
     age: '',
@@ -14,10 +16,10 @@ const Dashboard = ({ onClose, user, onSwitchDashboard }) => {
     linkedin: '',
     portfolio: ''
   });
-  const [fullName, setFullName] = useState(user?.firstName && user?.lastName ? `${user.firstName} ${user.lastName}` : '');
+  const [fullName, setFullName] = useState(user?.firstName && user?.lastName ? `${user?.firstName} ${user?.lastName}` : '');
   const [professionalTitle, setProfessionalTitle] = useState(user?.title || '');
   const [bio, setBio] = useState(user?.bio || '');
-  const [expertiseTags, setExpertiseTags] = useState(Array.isArray(user?.expertise) ? user.expertise : []);
+  const [expertiseTags, setExpertiseTags] = useState(Array.isArray(user?.expertise) ? user?.expertise : []);
   const [newExpertiseTag, setNewExpertiseTag] = useState('');
   const [notifications, setNotifications] = useState([
      {
@@ -40,8 +42,8 @@ const Dashboard = ({ onClose, user, onSwitchDashboard }) => {
      }
    ]);
   
-  const displayName = user?.firstName ? `${user.firstName}${user.lastName ? ' ' + user.lastName : ''}` : (user?.email || 'User');
-  const initials = (user?.firstName || user?.email || 'U').slice(0,1).toUpperCase() + (user?.lastName ? user.lastName.slice(0,1).toUpperCase() : '');
+  const displayName = user?.firstName ? `${user?.firstName}${user?.lastName ? ' ' + user?.lastName : ''}` : (user?.email || 'User');
+  const initials = (user?.firstName || user?.email || 'U').slice(0,1).toUpperCase() + (user?.lastName ? user?.lastName.slice(0,1).toUpperCase() : '');
 
   // Mock data
   const stats = {
@@ -192,7 +194,7 @@ const Dashboard = ({ onClose, user, onSwitchDashboard }) => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          _id: user._id,
+          _id: user?._id,
           fullName,
           professionalTitle,
           bio,
@@ -260,8 +262,8 @@ const Dashboard = ({ onClose, user, onSwitchDashboard }) => {
                 <h2>Welcome back, {displayName}!</h2>
                 <p>Signed in as {user?.email || '—'}</p>
                 <p>Here's what's happening with your mentoring business today.</p>
-                {user?.title && <p className="user-title">Title: {user.title}</p>}
-                {user?.bio && <p className="user-bio">Bio: {user.bio}</p>}
+                {user?.title && <p className="user-title">Title: {user?.title}</p>}
+                {user?.bio && <p className="user-bio">Bio: {user?.bio}</p>}
               </div>
               <div className="quick-actions">
                 <button className="action-btn primary">Create Service</button>
@@ -276,11 +278,11 @@ const Dashboard = ({ onClose, user, onSwitchDashboard }) => {
             </div>
             
             <div className="stats-container">
-              {user?.expertise && Array.isArray(user.expertise) && user.expertise.length > 0 && (
+              {user?.expertise && Array.isArray(user?.expertise) && user?.expertise.length > 0 && (
                 <div className="stat-card full-width">
                   <h3>My Expertise</h3>
                   <div className="expertise-tags">
-                    {user.expertise.map((exp, index) => (
+                    {user?.expertise?.map((exp, index) => (
                       <span key={index} className="expertise-tag">{exp}</span>
                     ))}
                   </div>
@@ -616,7 +618,7 @@ const Dashboard = ({ onClose, user, onSwitchDashboard }) => {
               <div className="profile-header">
                 {user?.profileImage ? (
                   <img 
-                    src={`${user.profileImage}?${Date.now()}`} 
+                    src={`${user?.profileImage}?${Date.now()}`} 
                     alt="Profile"
                     className="profile-avatar"
                     onError={(e) => {
@@ -635,21 +637,21 @@ const Dashboard = ({ onClose, user, onSwitchDashboard }) => {
               {user?.title && (
                 <div className="profile-title-display">
                   <h3>Title</h3>
-                  <p>{user.title}</p>
+                  <p>{user?.title}</p>
                 </div>
               )}
               {user?.bio && (
                 <div className="profile-bio">
                   <h3>About Me</h3>
-                  <p>{user.bio}</p>
+                  <p>{user?.bio}</p>
                 </div>
               )}
-              {user?.expertise && Array.isArray(user.expertise) && user.expertise.length > 0 && (
+              {user?.expertise && Array.isArray(user?.expertise) && user?.expertise.length > 0 && (
                 <div className="profile-expertise">
                   <h3>Areas of Expertise</h3>
                   <div className="expertise-tags">
-                    {user.expertise.map((exp, index) => (
-                      <span key={index} className="tag">{exp}</span>
+                    {user?.expertise?.map((exp, index) => (
+                      <span key={index} className="expertise-tag">{exp}</span>
                     ))}
                   </div>
                 </div>
@@ -761,92 +763,7 @@ const Dashboard = ({ onClose, user, onSwitchDashboard }) => {
       {/* Verification Form Modal */}
       {showVerificationForm && (
         <div className="verification-modal">
-          <div className="verification-form-container">
-            <div className="verification-header">
-              <h2>Verify Your Profile</h2>
-              <button 
-                className="close-modal-btn" 
-                onClick={() => setShowVerificationForm(false)}
-              >
-                ×
-              </button>
-            </div>
-            
-            <form onSubmit={handleVerificationSubmit} className="verification-form">
-              <div className="form-group">
-                <label htmlFor="name">Full Name *</label>
-                <input
-                  type="text"
-                  id="name"
-                  value={verificationData.name}
-                  onChange={(e) => handleVerificationChange('name', e.target.value)}
-                  placeholder="Enter your full name"
-                  required
-                />
-              </div>
-
-              <div className="form-group">
-                <label htmlFor="age">Age *</label>
-                <input
-                  type="number"
-                  id="age"
-                  value={verificationData.age}
-                  onChange={(e) => handleVerificationChange('age', e.target.value)}
-                  placeholder="Enter your age"
-                  min="18"
-                  max="100"
-                  required
-                />
-              </div>
-
-              <div className="form-group">
-                <label htmlFor="domain">Domain/Field of Expertise *</label>
-                <input
-                  type="text"
-                  id="domain"
-                  value={verificationData.domain}
-                  onChange={(e) => handleVerificationChange('domain', e.target.value)}
-                  placeholder="e.g., Software Development, Marketing, Finance"
-                  required
-                />
-              </div>
-
-              <div className="form-group">
-                <label htmlFor="linkedin">LinkedIn Profile URL</label>
-                <input
-                  type="url"
-                  id="linkedin"
-                  value={verificationData.linkedin}
-                  onChange={(e) => handleVerificationChange('linkedin', e.target.value)}
-                  placeholder="https://linkedin.com/in/yourprofile"
-                />
-              </div>
-
-              <div className="form-group">
-                <label htmlFor="portfolio">Portfolio/Website URL</label>
-                <input
-                  type="url"
-                  id="portfolio"
-                  value={verificationData.portfolio}
-                  onChange={(e) => handleVerificationChange('portfolio', e.target.value)}
-                  placeholder="https://yourportfolio.com"
-                />
-              </div>
-
-              <div className="form-actions">
-                <button 
-                  type="button" 
-                  className="cancel-btn"
-                  onClick={() => setShowVerificationForm(false)}
-                >
-                  Cancel
-                </button>
-                <button type="submit" className="submit-btn">
-                  Submit for Verification
-                </button>
-              </div>
-            </form>
-          </div>
+          <MentorApplicationForm userId={user?._id} />
         </div>
       )}
     </div>
